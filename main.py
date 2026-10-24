@@ -5,8 +5,11 @@ from flask import Flask
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-# CONFIGS - pegue do ENV no Render
-TOKEN = os.environ.get("BOT_TOKEN", "8988527445:AAFHWFcGDtYZ1I7iqf2XmcQv6XxQY98twEM")
+# PEGA 100% DO RENDER - SEM FALLBACK VAZADO
+TOKEN = os.environ.get("8988527445:AAH0FJAwyL-gN56twnCx-JManVpCfQBghI8")
+if not TOKEN:
+    raise RuntimeError("BOT_TOKEN nao definido no Environment do Render!")
+
 DONO_ID = int(os.environ.get("DONO_ID", "7599067084"))
 CANAL_BANCO_DADOS = int(os.environ.get("CANAL_BANCO_DADOS", "-1004358687748"))
 CANAL_OBRIGATORIO = os.environ.get("CANAL_OBRIGATORIO", "@lcmodsrepoo")
@@ -31,7 +34,8 @@ def checar_inscricao(user_id):
     try:
         status = bot.get_chat_member(CANAL_OBRIGATORIO, user_id).status
         return status in ['member', 'administrator', 'creator']
-    except Exception:
+    except Exception as e:
+        print(f"Erro checar_inscricao: {e}")
         return False
 
 def menu_apks():
@@ -58,7 +62,8 @@ def start_cmd(message):
             bot.send_message(user_id, "⌛ Enviando o seu APK, aguarde...")
             try:
                 bot.copy_message(user_id, CANAL_BANCO_DADOS, int(id_mensagem_apk))
-            except Exception:
+            except Exception as e:
+                print(f"Erro copy: {e}")
                 bot.send_message(user_id, "❌ Erro ao enviar arquivo. Verifique se o Bot é ADM do canal privado.")
         else:
             markup = InlineKeyboardMarkup()
@@ -85,7 +90,8 @@ def verificar_clique(call):
                 bot.edit_message_text("✅ Autorizado! Enviando o arquivo...", chat_id=user_id, message_id=call.message.message_id)
                 bot.copy_message(user_id, CANAL_BANCO_DADOS, int(id_msg))
                 downloads_pendentes.pop(user_id, None)
-            except Exception:
+            except Exception as e:
+                print(f"Erro verificar: {e}")
                 bot.send_message(user_id, "❌ Erro ao enviar o arquivo.")
         else:
             bot.answer_callback_query(call.id, "Inscrição confirmada!")
@@ -104,7 +110,8 @@ def processar_escolha_apk(call):
         try:
             bot.answer_callback_query(call.id, "Enviando APK...")
             bot.copy_message(call.from_user.id, CANAL_BANCO_DADOS, int(id_msg))
-        except Exception:
+        except Exception as e:
+            print(f"Erro apk: {e}")
             bot.answer_callback_query(call.id, "❌ Erro: o Bot precisa ser ADMIN do canal privado!", show_alert=True)
 
 @bot.callback_query_handler(func=lambda call: call.data == "refresh_menu")
@@ -121,8 +128,10 @@ def salvar_arquivo_dono(message):
         bot_info = bot.get_me()
         link_download = f"https://t.me/{bot_info.username}?start={id_da_msg_salva}"
         bot.reply_to(message, f"✅ **Arquivo salvo no banco de dados!**\n\nID da mensagem: `{id_da_msg_salva}`\n\nLink direto:\n{link_download}", parse_mode="Markdown")
-    except Exception:
-        bot.reply_to(message, "❌ Erro ao salvar no Banco de Dados.\n\nVerifique se o Bot é ADMIN do canal privado.")
+    except Exception as e:
+        print(f"Erro salvar: {e}")
+        bot.reply_to(message, "❌ Erro ao salvar no Banco de Dados. Verifique se o Bot é ADMIN do canal privado.")
 
-print("🤖 Bot iniciado!")
-bot.infinity_polling()
+print("🤖 Bot iniciado! Aguardando mensagens...")
+bot.infinity_polling(skip_pending=True)
+    

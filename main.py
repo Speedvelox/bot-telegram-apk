@@ -1,4 +1,3 @@
-
 import os
 from threading import Thread
 from flask import Flask
@@ -6,7 +5,7 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # PEGA 100% DO RENDER - SEM FALLBACK VAZADO
-TOKEN = os.environ.get("8988527445:AAH0FJAwyLgN56twnCxJManVpCfQBghI8")
+TOKEN = os.environ.get("8988527445:AAG8i3nyTTkjRal8idu4iPorzd1WOAEvAg0")
 if not TOKEN:
     raise RuntimeError("BOT_TOKEN nao definido no Environment do Render!")
 

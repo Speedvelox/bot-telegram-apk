@@ -6,7 +6,7 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # PEGA 100% DO RENDER - SEM FALLBACK VAZADO
-TOKEN = os.environ.get("8988527445:AAH0FJAwyL-gN56twnCx-JManVpCfQBghI8")
+TOKEN = os.environ.get("8988527445:AAH0FJAwyLgN56twnCxJManVpCfQBghI8")
 if not TOKEN:
     raise RuntimeError("BOT_TOKEN nao definido no Environment do Render!")
 
